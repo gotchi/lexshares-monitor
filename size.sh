@@ -43,7 +43,7 @@ File size has changed:
 $LOGFILE_OLD: $LOGSIZE_OLD bytes
 $LOGFILE: $LOGSIZE bytes
 
-Check out the website at https://www.lexshares.com/cases
-If the content on the page has changed, LexShares is preparing for a new case!
+Check out the case portfolio at https://www.lexshares.com/cases
+If the page has updated, a new case is in the pipeline.
 EOF
 fi
