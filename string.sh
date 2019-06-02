@@ -11,7 +11,7 @@ export PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
 
 # Variables
 RECIPIENTS_EML="me@me.com, you@you.com"
-RECIPIENTS_TXT="8088888888@txt.att.net, 2129999999@vtext.com"
+RECIPIENTS_TXT="2122222222@txt.att.net, 6466666666@messaging.sprintpcs.com, 3322222222@tmomail.net, 4155555555@vtext.com"
 STRING='View Case Details'
 THRESHOLD=3
 
