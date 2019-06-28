@@ -10,8 +10,14 @@ export LC_ALL=C
 export PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
 
 # Variables
-RECIPIENTS="me@me.com"
 DELTA=100
+
+USE_EMAIL=false
+RECIPIENTS_EMAIL="me@me.com"
+
+USE_TEXTBELT=true
+RECIPIENTS_TEXTBELT="2122222222"
+API_KEY=textbelt
 
 # Create directory of log files
 LOGFILE=/opt/lexshares-monitor/logs/cases-$(date +%Y%m%d-%H%M%S).html
@@ -33,7 +39,9 @@ fi
 
 # Compare the file size
 if [[ $((LOGSIZE-LOGSIZE_OLD)) -gt $DELTA ]] || [[ $((LOGSIZE_OLD-LOGSIZE)) -gt $DELTA ]]; then
-  sendmail "$RECIPIENTS" <<EOF
+  # Send emails
+  if $USE_EMAIL; then
+      sendmail "$RECIPIENTS_EMAIL" <<EOF
 From: "LexShares Monitor" <monitor@lexshares.com>
 Subject: LexShares Case Prep Alert! - $0
 Content-Type: text/plain; charset=utf-8
@@ -46,4 +54,15 @@ $LOGFILE: $LOGSIZE bytes
 Check out the case portfolio at https://www.lexshares.com/cases
 If the page has updated, a new case is in the pipeline.
 EOF
+  fi
+  # Send SMS messages via Textbelt
+  if $USE_TEXTBELT; then
+    for i in $RECIPIENTS_TEXTBELT
+    do
+      curl -X POST https://textbelt.com/text \
+        --data-urlencode phone="$i" \
+        --data-urlencode message="LexShares Case Prep Alert! - $0" \
+        -d key="$API_KEY"
+    done
+  fi
 fi
