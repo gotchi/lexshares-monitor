@@ -26,54 +26,70 @@ TWILIO_AUTH_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 # Create directory of log files
 LOGFILE=/opt/lexshares-monitor/logs/cases-$(date +%Y%m%d-%H%M%S).html
-if [[ ! -d "$(dirname "$LOGFILE")" ]]; then
-  mkdir -p "$(dirname "$LOGFILE")"
+if [[ ! -d $(dirname $LOGFILE) ]]; then
+  mkdir -p $(dirname $LOGFILE)/assets
 fi
-LOGFILE_OLD=$(find "$(dirname "$LOGFILE")" -name "*.html" | sort | tail -1)
 
 # Retrieve the case listing
-curl -s -o "$LOGFILE" https://www.lexshares.com/cases
+curl -s -o $LOGFILE https://www.lexshares.com/cases
 
-# Check the file size
-if [[ -n $LOGFILE_OLD ]]; then
-  LOGSIZE_OLD=$(stat -c %s "$LOGFILE_OLD")
-  LOGSIZE=$(stat -c %s "$LOGFILE")
-else
+# a 'first run' check
+if [[ ! -f last ]]; then
+  stat -c %s $LOGFILE > last
+  rm -f $LOGFILE
   exit 0
 fi
 
 # Compare the file size
-if [[ $((LOGSIZE-LOGSIZE_OLD)) -gt $DELTA ]] || [[ $((LOGSIZE_OLD-LOGSIZE)) -gt $DELTA ]]; then
-  # Send emails
-  if $USE_EMAIL; then
-      sendmail "$RECIPIENTS_EMAIL" <<EOF
+OLD_SIZE=$(cat last)
+NEW_SIZE=$(stat -c %s $LOGFILE)
+
+if [[ $((NEW_SIZE-OLD_SIZE))**2 -gt $((DELTA**2)) ]]; then
+  # Retry
+  curl -s -o RETRY https://www.lexshares.com/cases
+  RETRY_SIZE=$(stat -c %s RETRY)
+  if [[ $((RETRY_SIZE-OLD_SIZE))**2 -gt $((DELTA**2)) ]]; then
+    # Send emails
+    if $USE_EMAIL; then
+        sendmail "$RECIPIENTS_EMAIL" <<EOF
 From: "LexShares Monitor" <monitor@lexshares.com>
 Subject: LexShares Case Prep Alert! - $0
 Content-Type: text/plain; charset=utf-8
 
 File size has changed:
 ------
-$LOGFILE_OLD: $LOGSIZE_OLD bytes
-$LOGFILE: $LOGSIZE bytes
+http://lex.rentier.us/$(basename $LOGFILE_OLD): $LOGSIZE_OLD bytes
+http://lex.rentier.us/$(basename $LOGFILE): $LOGSIZE bytes
 
 Check out the case portfolio at https://www.lexshares.com/cases
 If the page has updated, a new case is in the pipeline.
 EOF
+    fi
+    # Send SMS messages via SMS Gateway
+    if $USE_SMS; then
+      echo "LexShares Case Prep Alert! - $0" | sendmail "$RECIPIENTS_SMS"
+    fi
+    # Send SMS messages via Twilio
+    if $USE_TWILIO; then
+      for i in $RECIPIENTS_TWILIO
+      do
+        curl -X POST https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json \
+          --data-urlencode "Body=LexShares Case Prep Alert! - $0" \
+          --data-urlencode "From=$TWILIO_FROM" \
+          --data-urlencode "To=$i" \
+          -u ${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}
+        sleep 5
+      done
+    fi
+    # Save a .css file
+    CSS=$(grep -o application-.*css $LOGFILE)
+    curl -s -o $(dirname $LOGFILE)/assets/${CSS} https://www.lexshares.com/assets/${CSS}
+    stat -c %s $LOGFILE > last
+  else
+    rm -f $LOGFILE
   fi
-  # Send SMS messages via SMS Gateway
-  if $USE_SMS; then
-    echo "LexShares Case Prep Alert! - $0" | sendmail "$RECIPIENTS_SMS"
-  fi
-  # Send SMS messages via Twilio
-  if $USE_TWILIO; then
-    for i in $RECIPIENTS_TWILIO
-    do
-      curl -X POST https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json \
-        --data-urlencode "Body=LexShares Case Prep Alert! - $0" \
-        --data-urlencode "From=$TWILIO_FROM" \
-        --data-urlencode "To=$i" \
-        -u ${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}
-      sleep 5
-    done
-  fi
+  rm -f RETRY
+else
+  stat -c %s $LOGFILE > last
+  rm -f $LOGFILE
 fi
