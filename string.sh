@@ -76,9 +76,9 @@ EOF
       for recipient in $TWILIO_TO
       do
         curl -X POST https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json \
-          --data-urlencode "Body=LexShares New Case Alert! - $COUNTER/$THRESHOLD" \
           --data-urlencode "From=$TWILIO_FROM" \
           --data-urlencode "To=$recipient" \
+          --data-urlencode "Body=LexShares New Case Alert! - $COUNTER/$THRESHOLD" \
           -u ${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}
         # Twilio imposes rate restrictions for local number
         sleep 5
