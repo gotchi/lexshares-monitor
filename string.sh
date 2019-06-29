@@ -41,7 +41,7 @@ if curl -s https://www.lexshares.com/cases | grep -i "$STRING"; then
     if $USE_EMAIL; then
       sendmail "$RECIPIENTS_EMAIL" <<EOF
 From: "LexShares Monitor" <monitor@lexshares.com>
-Subject: LexShares New Case Alert! - $0 - $COUNTER/$THRESHOLD
+Subject: LexShares New Case Alert! - $COUNTER/$THRESHOLD
 Content-Type: text/plain; charset=utf-8
 
 Found the string "$STRING" at https://www.lexshares.com/cases

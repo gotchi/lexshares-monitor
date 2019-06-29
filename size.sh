@@ -53,7 +53,7 @@ if [[ $((NEW_SIZE-OLD_SIZE))**2 -gt $((DELTA**2)) ]]; then
     if $USE_EMAIL; then
         sendmail "$RECIPIENTS_EMAIL" <<EOF
 From: "LexShares Monitor" <monitor@lexshares.com>
-Subject: LexShares Case Prep Alert! - $0
+Subject: LexShares Case Prep Alert!
 Content-Type: text/plain; charset=utf-8
 
 File size has changed:
@@ -68,14 +68,14 @@ EOF
     fi
     # Send SMS messages via SMS Gateway
     if $USE_SMS; then
-      echo "LexShares Case Prep Alert! - $0" | sendmail "$RECIPIENTS_SMS"
+      echo "LexShares Case Prep Alert!" | sendmail "$RECIPIENTS_SMS"
     fi
     # Send SMS messages via Twilio
     if $USE_TWILIO; then
       for i in $RECIPIENTS_TWILIO
       do
         curl -X POST https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json \
-          --data-urlencode "Body=LexShares Case Prep Alert! - $0" \
+          --data-urlencode "Body=LexShares Case Prep Alert!" \
           --data-urlencode "From=$TWILIO_FROM" \
           --data-urlencode "To=$i" \
           -u ${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}
