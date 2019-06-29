@@ -9,19 +9,24 @@ export LC_ALL=C
 # Set PATH
 export PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
 
-# Variables
+# Monitor Configuration
 STRING='View Case Details'
-THRESHOLD=3
+THRESHOLD=1
 
+# Email
 USE_EMAIL=true
 RECIPIENTS_EMAIL="me@me.com, you@you.com"
 
+# SMS Gateway
 USE_SMS=true
 RECIPIENTS_SMS="2122222222@txt.att.net, 6466666666@messaging.sprintpcs.com, 3322222222@tmomail.net, 4155555555@vtext.com"
 
-USE_TEXTBELT=false
-RECIPIENTS_TEXTBELT="2122222222 6466666666 3322222222 4155555555"
-API_KEY=textbelt
+# Twilio
+USE_TWILIO=true
+RECIPIENTS_TWILIO="2122222222 6466666666 3322222222 4155555555"
+TWILIO_FROM=8559108712
+TWILIO_ACCOUNT_SID=ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+TWILIO_AUTH_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 # Check the string
 if curl -s https://www.lexshares.com/cases | grep -i "$STRING"; then
@@ -50,14 +55,16 @@ EOF
     if $USE_SMS; then
       echo "LexShares New Case Alert! - $COUNTER/$THRESHOLD" | sendmail "$RECIPIENTS_SMS"
     fi
-    # Send SMS messages via Textbelt
-    if $USE_TEXTBELT; then
-      for i in $RECIPIENTS_TEXTBELT
+    # Send SMS messages via Twilio
+    if $USE_TWILIO; then
+      for i in $RECIPIENTS_TWILIO
       do
-        curl -X POST https://textbelt.com/text \
-          --data-urlencode phone="$i" \
-          --data-urlencode message="LexShares New Case Alert! - $COUNTER/$THRESHOLD" \
-          -d key="$API_KEY"
+        curl -X POST "https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json" \
+          --data-urlencode "To=$i" \
+          --data-urlencode "From=$TWILIO_FROM" \
+          --data-urlencode "Body=LexShares New Case Alert! - $COUNTER/$THRESHOLD" \
+          -u ${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}
+        sleep 5
       done
     fi
   fi
