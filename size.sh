@@ -15,7 +15,7 @@ DELTA=100
 USE_EMAIL=true
 RECIPIENTS_EMAIL="me@me.com"
 # SMS Gateway
-USE_SMS=true
+USE_SMS=false
 RECIPIENTS_SMS="2122222222@txt.att.net"
 # Twilio
 USE_TWILIO=false
