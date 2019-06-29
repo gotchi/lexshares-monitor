@@ -11,7 +11,7 @@ export PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
 
 # Monitor Configuration
 STRING='View Case Details'
-THRESHOLD=1
+THRESHOLD=3
 # Email
 USE_EMAIL=true
 EMAIL_TO="me@me.com, you@you.com"
