@@ -14,14 +14,14 @@ STRING='View Case Details'
 THRESHOLD=1
 # Email
 USE_EMAIL=true
-RECIPIENTS_EMAIL="me@me.com, you@you.com"
+EMAIL_TO="me@me.com, you@you.com"
 # SMS Gateway
 USE_SMS=true
-RECIPIENTS_SMS="2122222222@txt.att.net, 6466666666@messaging.sprintpcs.com, 3322222222@tmomail.net, 4155555555@vtext.com"
+SMS_TO="2122222222@txt.att.net, 6466666666@messaging.sprintpcs.com, 3322222222@tmomail.net, 4155555555@vtext.com"
 # Twilio
 USE_TWILIO=false
-RECIPIENTS_TWILIO="2122222222 6466666666 3322222222 4155555555"
 TWILIO_FROM=8559108712
+TWILIO_TO="2122222222 6466666666 3322222222 4155555555"
 TWILIO_ACCOUNT_SID=ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 TWILIO_AUTH_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
@@ -39,7 +39,7 @@ if curl -s https://www.lexshares.com/cases | grep -i "$STRING"; then
   if [[ "$COUNTER" -le "$THRESHOLD" ]]; then
     # Send emails
     if $USE_EMAIL; then
-      sendmail "$RECIPIENTS_EMAIL" <<EOF
+      sendmail "$EMAIL_TO" <<EOF
 From: "LexShares Monitor" <monitor@lexshares.com>
 Subject: LexShares New Case Alert! - $COUNTER/$THRESHOLD
 Content-Type: text/plain; charset=utf-8
@@ -50,11 +50,11 @@ EOF
     fi
     # Send SMS messages via SMS Gateway
     if $USE_SMS; then
-      echo "LexShares New Case Alert! - $COUNTER/$THRESHOLD" | sendmail "$RECIPIENTS_SMS"
+      echo "LexShares New Case Alert! - $COUNTER/$THRESHOLD" | sendmail "$SMS_TO"
     fi
     # Send SMS messages via Twilio
     if $USE_TWILIO; then
-      for i in $RECIPIENTS_TWILIO
+      for i in $TWILIO_TO
       do
         curl -X POST https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json \
           --data-urlencode "Body=LexShares New Case Alert! - $COUNTER/$THRESHOLD" \

@@ -13,13 +13,13 @@ export PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
 DELTA=100
 # Email
 USE_EMAIL=true
-RECIPIENTS_EMAIL="me@me.com"
+EMAIL_TO="me@me.com"
 # SMS Gateway
 USE_SMS=false
-RECIPIENTS_SMS="2122222222@txt.att.net"
+SMS_TO="2122222222@txt.att.net"
 # Twilio
 USE_TWILIO=false
-RECIPIENTS_TWILIO="2122222222"
+TWILIO_TO="2122222222"
 TWILIO_FROM=8559108712
 TWILIO_ACCOUNT_SID=ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 TWILIO_AUTH_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -51,7 +51,7 @@ if [[ $((NEW_SIZE-OLD_SIZE))**2 -gt $((DELTA**2)) ]]; then
   if [[ $((RETRY_SIZE-OLD_SIZE))**2 -gt $((DELTA**2)) ]]; then
     # Send emails
     if $USE_EMAIL; then
-        sendmail "$RECIPIENTS_EMAIL" <<EOF
+        sendmail "$EMAIL_TO" <<EOF
 From: "LexShares Monitor" <monitor@lexshares.com>
 Subject: LexShares Case Prep Alert!
 Content-Type: text/plain; charset=utf-8
@@ -68,11 +68,11 @@ EOF
     fi
     # Send SMS messages via SMS Gateway
     if $USE_SMS; then
-      echo "LexShares Case Prep Alert!" | sendmail "$RECIPIENTS_SMS"
+      echo "LexShares Case Prep Alert!" | sendmail "$SMS_TO"
     fi
     # Send SMS messages via Twilio
     if $USE_TWILIO; then
-      for i in $RECIPIENTS_TWILIO
+      for i in $TWILIO_TO
       do
         curl -X POST https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json \
           --data-urlencode "Body=LexShares Case Prep Alert!" \
