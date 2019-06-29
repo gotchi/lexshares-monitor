@@ -56,7 +56,7 @@ The major ISPs usually block emails if you try sending directly. To get around t
    tail -f /var/log/msmtp/msmtp.log
    ```
 
-#### cron
+### cron
 Set up scheduled tasks to monitor on a regular basis. Adjust the `hour (0 - 23)` and `day of week (0 - 6) (Sunday=0)` for the system time zone. See following examples for `PDT` time (UTC/GMT-07:00).
 ```bash
 # LexShares - File Size Monitoring (M-F 10AM-6PM EST)
