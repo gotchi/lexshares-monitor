@@ -13,15 +13,15 @@ Use [SMS Gateway](https://en.wikipedia.org/wiki/SMS_gateway#Email_clients) or [S
 ### msmtp
 The major ISPs usually block emails if you try sending directly. To get around the problem, I use msmtp to route my messages through a third-party mail server such as Google, Yahoo, or Spectrum. msmtp is a simple mail transfer agent. It supports SMTP Authentication over TLS/STARTTLS. Follow the steps below to setup msmtp on your system.
 1. Install
-  ```bash
-  yum -y install msmtp
-  useradd -rmd /usr/lib/msmtp msmtp
-  mkdir /var/log/msmtp
-  chmod 750 /var/log/msmtp
-  chown msmtp.msmtp /var/log/msmtp
+   ```bash
+   yum -y install msmtp
+   useradd -rmd /usr/lib/msmtp msmtp
+   mkdir /var/log/msmtp
+   chmod 750 /var/log/msmtp
+   chown msmtp.msmtp /var/log/msmtp
+   ```
 1. Configure
-# Configure
-  ```bash
+   ```bash
 su - msmtp
 cat > ~/.msmtprc <EOF
 defaults
