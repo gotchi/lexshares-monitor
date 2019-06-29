@@ -12,15 +12,12 @@ export PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
 # Monitor Configuration
 STRING='View Case Details'
 THRESHOLD=1
-
 # Email
 USE_EMAIL=true
 RECIPIENTS_EMAIL="me@me.com, you@you.com"
-
 # SMS Gateway
 USE_SMS=true
 RECIPIENTS_SMS="2122222222@txt.att.net, 6466666666@messaging.sprintpcs.com, 3322222222@tmomail.net, 4155555555@vtext.com"
-
 # Twilio
 USE_TWILIO=false
 RECIPIENTS_TWILIO="2122222222 6466666666 3322222222 4155555555"
@@ -59,10 +56,10 @@ EOF
     if $USE_TWILIO; then
       for i in $RECIPIENTS_TWILIO
       do
-        curl -X POST "https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json" \
-          --data-urlencode "To=$i" \
-          --data-urlencode "From=$TWILIO_FROM" \
+        curl -X POST https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json \
           --data-urlencode "Body=LexShares New Case Alert! - $COUNTER/$THRESHOLD" \
+          --data-urlencode "From=$TWILIO_FROM" \
+          --data-urlencode "To=$i" \
           -u ${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}
         sleep 5
       done

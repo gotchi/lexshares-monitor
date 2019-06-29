@@ -11,11 +11,12 @@ export PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
 
 # Monitor Configuration
 DELTA=100
-
 # Email
 USE_EMAIL=true
 RECIPIENTS_EMAIL="me@me.com"
-
+# SMS Gateway
+USE_SMS=true
+RECIPIENTS_SMS="2122222222@txt.att.net"
 # Twilio
 USE_TWILIO=false
 RECIPIENTS_TWILIO="2122222222"
@@ -59,14 +60,18 @@ Check out the case portfolio at https://www.lexshares.com/cases
 If the page has updated, a new case is in the pipeline.
 EOF
   fi
+  # Send SMS messages via SMS Gateway
+  if $USE_SMS; then
+    echo "LexShares Case Prep Alert! - $0" | sendmail "$RECIPIENTS_SMS"
+  fi
   # Send SMS messages via Twilio
   if $USE_TWILIO; then
     for i in $RECIPIENTS_TWILIO
     do
-      curl -X POST "https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json" \
-        --data-urlencode "To=$i" \
-        --data-urlencode "From=$TWILIO_FROM" \
+      curl -X POST https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json \
         --data-urlencode "Body=LexShares Case Prep Alert! - $0" \
+        --data-urlencode "From=$TWILIO_FROM" \
+        --data-urlencode "To=$i" \
         -u ${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}
       sleep 5
     done
