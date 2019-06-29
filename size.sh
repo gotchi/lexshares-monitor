@@ -9,15 +9,19 @@ export LC_ALL=C
 # Set PATH
 export PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
 
-# Variables
+# Monitor Configuration
 DELTA=100
 
-USE_EMAIL=false
+# Email
+USE_EMAIL=true
 RECIPIENTS_EMAIL="me@me.com"
 
-USE_TEXTBELT=true
-RECIPIENTS_TEXTBELT="2122222222"
-API_KEY=textbelt
+# Twilio
+USE_TWILIO=false
+RECIPIENTS_TWILIO="2122222222"
+TWILIO_FROM=8559108712
+TWILIO_ACCOUNT_SID=ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+TWILIO_AUTH_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 # Create directory of log files
 LOGFILE=/opt/lexshares-monitor/logs/cases-$(date +%Y%m%d-%H%M%S).html
@@ -55,14 +59,16 @@ Check out the case portfolio at https://www.lexshares.com/cases
 If the page has updated, a new case is in the pipeline.
 EOF
   fi
-  # Send SMS messages via Textbelt
-  if $USE_TEXTBELT; then
-    for i in $RECIPIENTS_TEXTBELT
+  # Send SMS messages via Twilio
+  if $USE_TWILIO; then
+    for i in $RECIPIENTS_TWILIO
     do
-      curl -X POST https://textbelt.com/text \
-        --data-urlencode phone="$i" \
-        --data-urlencode message="LexShares Case Prep Alert! - $0" \
-        -d key="$API_KEY"
+      curl -X POST "https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json" \
+        --data-urlencode "To=$i" \
+        --data-urlencode "From=$TWILIO_FROM" \
+        --data-urlencode "Body=LexShares Case Prep Alert! - $0" \
+        -u ${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}
+      sleep 5
     done
   fi
 fi
