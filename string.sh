@@ -61,6 +61,7 @@ EOF
           --data-urlencode "From=$TWILIO_FROM" \
           --data-urlencode "To=$i" \
           -u ${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}
+        # Twilio imposes rate restrictions for local number
         sleep 5
       done
     fi

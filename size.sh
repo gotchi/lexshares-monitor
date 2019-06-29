@@ -24,13 +24,13 @@ TWILIO_FROM=8559108712
 TWILIO_ACCOUNT_SID=ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 TWILIO_AUTH_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-# Create directory of log files
+# Create a log directory
 LOGFILE=/opt/lexshares-monitor/logs/cases-$(date +%Y%m%d-%H%M%S).html
 if [[ ! -d $(dirname $LOGFILE) ]]; then
   mkdir -p $(dirname $LOGFILE)/assets
 fi
 
-# Retrieve the case listing
+# Retrieve the case listing page
 curl -s -o $LOGFILE https://www.lexshares.com/cases
 
 # a 'first run' check
@@ -40,7 +40,7 @@ if [[ ! -f last ]]; then
   exit 0
 fi
 
-# Compare the file size
+# Compare 2 file sizes
 OLD_SIZE=$(cat last)
 NEW_SIZE=$(stat -c %s $LOGFILE)
 
@@ -79,6 +79,7 @@ EOF
           --data-urlencode "From=$TWILIO_FROM" \
           --data-urlencode "To=$i" \
           -u ${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}
+        # Twilio imposes rate restrictions for local number
         sleep 5
       done
     fi
