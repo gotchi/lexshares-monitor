@@ -58,8 +58,9 @@ Content-Type: text/plain; charset=utf-8
 
 File size has changed:
 ------
-http://lex.rentier.us/$(basename $LOGFILE_OLD): $LOGSIZE_OLD bytes
-http://lex.rentier.us/$(basename $LOGFILE): $LOGSIZE bytes
+Previous: $OLD_SIZE bytes
+Current:  $NEW_SIZE bytes
+Retry:    $RETRY_SIZE bytes
 
 Check out the case portfolio at https://www.lexshares.com/cases
 If the page has updated, a new case is in the pipeline.
