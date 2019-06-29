@@ -1,6 +1,7 @@
 # LexShares Monitor
 * size.sh - monitor a file size of the [case portfolio](https://www.lexshares.com/cases) page. If it has changed more than `DELTA` bytes, a notification will be sent to recipients.
 * string.sh - parse HTML content of the [case portfolio](https://www.lexshares.com/cases) page. If it contains `STRING`, notifications will be sent to recipients up to `THRESHOLD` times.
+
 Use [SMS Gateway](https://en.wikipedia.org/wiki/SMS_gateway#Email_clients) or [SMS API](https://www.twilio.com/) to send SMS messages to a mobile device.
 
 # Requirements
