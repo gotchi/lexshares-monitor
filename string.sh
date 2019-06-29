@@ -12,12 +12,15 @@ export PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
 # Monitor Configuration
 STRING='View Case Details'
 THRESHOLD=3
+# msmtp
+MSMTP_CONFIG=/usr/lib/msmtp/.msmtprc
+MSMTP_ACCOUNT=spectrum
 # Email
-USE_EMAIL=true
-EMAIL_TO="me@me.com, you@you.com"
+USE_EMAIL=false
+EMAIL_TO="me@me.com you@you.com"
 # SMS Gateway
-USE_SMS=true
-SMS_TO="2122222222@txt.att.net, 6466666666@messaging.sprintpcs.com, 3322222222@tmomail.net, 4155555555@vtext.com"
+USE_SMS=false
+SMS_TO="2122222222@txt.att.net 6466666666@messaging.sprintpcs.com 3322222222@tmomail.net 4155555555@vtext.com"
 # Twilio
 USE_TWILIO=false
 TWILIO_FROM=8559108712
@@ -39,27 +42,43 @@ if curl -s https://www.lexshares.com/cases | grep -i "$STRING"; then
   if [[ "$COUNTER" -le "$THRESHOLD" ]]; then
     # Send emails
     if $USE_EMAIL; then
-      sendmail "$EMAIL_TO" <<EOF
+      for recipient in $EMAIL_TO
+      do
+        msmtp -C $MSMTP_CONFIG -a $MSMTP_ACCOUNT $recipient <<EOF
 From: "LexShares Monitor" <monitor@lexshares.com>
+To: $recipient
 Subject: LexShares New Case Alert! - $COUNTER/$THRESHOLD
 Content-Type: text/plain; charset=utf-8
 
 Found the string "$STRING" at https://www.lexshares.com/cases
-Hurry up! New Investment Opportunity is available!!
+A new investment opportunity is now available!!
 EOF
+        sleep 1
+      done
     fi
     # Send SMS messages via SMS Gateway
     if $USE_SMS; then
-      echo "LexShares New Case Alert! - $COUNTER/$THRESHOLD" | sendmail "$SMS_TO"
+      for recipient in $SMS_TO
+      do
+        msmtp -C $MSMTP_CONFIG -a $MSMTP_ACCOUNT $recipient <<EOF
+From: "LexShares Monitor" <monitor@lexshares.com>
+To: $recipient
+Subject: LexShares New Case Alert! - $COUNTER/$THRESHOLD
+Content-Type: text/plain; charset=utf-8
+
+Request to view the case details at https://www.lexshares.com/cases
+EOF
+        sleep 1
+      done
     fi
     # Send SMS messages via Twilio
     if $USE_TWILIO; then
-      for i in $TWILIO_TO
+      for recipient in $TWILIO_TO
       do
         curl -X POST https://api.twilio.com/2010-04-01/Accounts/${TWILIO_ACCOUNT_SID}/Messages.json \
           --data-urlencode "Body=LexShares New Case Alert! - $COUNTER/$THRESHOLD" \
           --data-urlencode "From=$TWILIO_FROM" \
-          --data-urlencode "To=$i" \
+          --data-urlencode "To=$recipient" \
           -u ${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}
         # Twilio imposes rate restrictions for local number
         sleep 5
