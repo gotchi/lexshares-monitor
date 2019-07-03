@@ -30,7 +30,7 @@ TWILIO_AUTH_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 # Create a log directory
 LOGFILE=/opt/lexshares-monitor/logs/cases-$(date +%Y%m%d-%H%M%S).html
 if [[ ! -d $(dirname $LOGFILE) ]]; then
-  mkdir -p $(dirname $LOGFILE)/assets
+  mkdir -p $(dirname $LOGFILE)
 fi
 
 # Retrieve the case listing page
@@ -102,9 +102,6 @@ EOF
         sleep 5
       done
     fi
-    # Save a .css file
-    CSS=$(grep -o application-.*css $LOGFILE)
-    curl -s -o $(dirname $LOGFILE)/assets/${CSS} https://www.lexshares.com/assets/${CSS}
     stat -c %s $LOGFILE > last
   else
     rm -f $LOGFILE
