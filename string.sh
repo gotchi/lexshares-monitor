@@ -10,7 +10,7 @@ export LC_ALL=C
 export PATH=/bin:/usr/bin:/usr/local/bin:/sbin:/usr/sbin:/usr/local/sbin
 
 # Monitor Configuration
-STRING='View Case Details'
+STRING='Join to access'
 THRESHOLD=3
 # msmtp
 MSMTP_CONFIG=/usr/lib/msmtp/.msmtprc
