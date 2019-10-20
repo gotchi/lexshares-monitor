@@ -23,7 +23,7 @@ The major ISPs usually block emails if you try sending directly. To get around t
 1. Configure
    ```bash
    su - msmtp
-   cat > ~/.msmtprc <EOF
+   cat > ~/.msmtprc <<EOF
    defaults
        tls on
        tls_starttls on
