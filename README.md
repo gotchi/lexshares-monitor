@@ -4,14 +4,14 @@
 
 Use [SMS Gateway](https://en.wikipedia.org/wiki/SMS_gateway#Email_clients) or [SMS API](https://www.twilio.com/) to send SMS messages to a mobile device.
 
-# Requirements
-* cron
+## Requirements
 * cURL
 * msmtp
+* cron
 
-# Setup
+## Setup
 ### msmtp
-The major ISPs usually block emails if you try sending directly. To get around the problem, I use msmtp to route my messages through a third-party mail server such as Google, Yahoo, or Spectrum. msmtp is a simple mail transfer agent. It supports SMTP Authentication over TLS/STARTTLS. Follow the steps below to setup msmtp on your system.
+The major ISPs usually block emails if you try sending directly. To get around the problem, I use msmtp to route my messages through a third-party mail server such as Google, Yahoo, or Spectrum. msmtp is a simple mail transfer agent that supports SMTP Authentication over TLS/STARTTLS. Follow the steps below to setup msmtp on your system.
 1. Install
    ```bash
    yum -y install msmtp
